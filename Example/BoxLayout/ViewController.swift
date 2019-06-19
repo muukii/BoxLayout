@@ -61,6 +61,8 @@ class ViewController: UIViewController {
             
           }
           
+          BoxVSpacer()
+          
           BoxZStack {
             BoxElement(UIView.make(backgroundColor: .purple))
               .frame(width: 200, height: 200)
