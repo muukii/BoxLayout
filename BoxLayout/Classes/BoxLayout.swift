@@ -10,22 +10,27 @@ import UIKit
 
 public final class BoxContainerView : UIView {
   
+  private(set) public var currentConstraints: [NSLayoutConstraint] = []
+  
   public init<B : BoxType>(content: () -> B) {
     super.init(frame: .zero)
     
     let content = content()
-    let view = content.apply().body
+    let result = content.apply()
+    let view = result.rootElement.body
     
     addSubview(view)
     
     view.translatesAutoresizingMaskIntoConstraints = false
     
-    NSLayoutConstraint.activate([
+    NSLayoutConstraint.activate(result.constraints + [
       view.topAnchor.constraint(equalTo: topAnchor),
       view.rightAnchor.constraint(equalTo: rightAnchor),
       view.bottomAnchor.constraint(equalTo: bottomAnchor),
       view.leftAnchor.constraint(equalTo: leftAnchor),
       ])
+    
+    currentConstraints = result.constraints
   }
   
   @available(*, unavailable)
@@ -34,11 +39,23 @@ public final class BoxContainerView : UIView {
   }
 }
 
+public struct BoxApplying {
+  
+  public let rootElement: BoxElement
+  public let constraints: [NSLayoutConstraint]
+  
+  init(rootElement: BoxElement, constraints: [NSLayoutConstraint]) {
+    self.rootElement = rootElement
+    self.constraints = constraints
+  }
+  
+}
+
 public protocol BoxType {
   
   typealias Modified<T> = Self
   
-  func apply() -> BoxElement
+  func apply() -> BoxApplying
 }
 
 public protocol ContainerBoxType : BoxType {
@@ -52,8 +69,8 @@ public struct BoxEmpty : BoxType {
     
   }
   
-  public func apply() -> BoxElement {
-    BoxElement(UIView())
+  public func apply() -> BoxApplying {
+    return .init(rootElement: BoxElement(UIView()), constraints: [])
   }
 }
 
@@ -65,8 +82,9 @@ public struct BoxMultiple {
     self.contents = contents()
   }
   
-  public func apply() -> [BoxElement] {
-    contents.compactMap { $0.apply() }
+  public func apply() -> [BoxApplying] {
+    let result = contents.compactMap { $0.apply() }
+    return result
   }
 }
 
@@ -80,17 +98,19 @@ public struct BoxElement: BoxType {
     self.body = view
   }
   
-  public func apply() -> BoxElement {
+  public func apply() -> BoxApplying {
     
     body.translatesAutoresizingMaskIntoConstraints = false
     
-    NSLayoutConstraint.activate([
-      width.map { body.widthAnchor.constraint(equalToConstant: $0) },
-      height.map { body.heightAnchor.constraint(equalToConstant: $0) },
-      ].compactMap { $0 }
+    return
+      BoxApplying(
+        rootElement: self,
+        constraints: [
+          width.map { body.widthAnchor.constraint(equalToConstant: $0) },
+          height.map { body.heightAnchor.constraint(equalToConstant: $0) },
+          ].compactMap { $0 }
     )
     
-    return self
   }
 }
 
@@ -125,22 +145,27 @@ public struct BoxPadding<Box : BoxType> : ContainerBoxType {
     self.padding = padding
   }
   
-  public func apply() -> BoxElement {
+  public func apply() -> BoxApplying {
     
-    let view = content.apply().body
+    let result = content.apply()
+    
+    let view = result.rootElement.body
     
     container.addSubview(view)
     
     view.translatesAutoresizingMaskIntoConstraints = false
     
-    NSLayoutConstraint.activate([
-      view.topAnchor.constraint(equalTo: container.topAnchor, constant: padding.top),
-      view.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -padding.right),
-      view.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -padding.bottom),
-      view.leftAnchor.constraint(equalTo: container.leftAnchor, constant: padding.left),
-      ])
+    return
+      BoxApplying(
+        rootElement: BoxElement(container),
+        constraints: result.constraints + [
+          view.topAnchor.constraint(equalTo: container.topAnchor, constant: padding.top),
+          view.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -padding.right),
+          view.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -padding.bottom),
+          view.leftAnchor.constraint(equalTo: container.leftAnchor, constant: padding.left),
+        ]
+    )
     
-    return BoxElement(container)
   }
 }
 
@@ -156,75 +181,87 @@ public struct BoxInset<Box: BoxType> : ContainerBoxType {
     self.insets = insets
   }
   
-  public func apply() -> BoxElement {
+  public func apply() -> BoxApplying {
     
-    let view = content.apply().body
+    let result = content.apply()
+    
+    let view = result.rootElement.body
     
     container.addSubview(view)
     
     view.translatesAutoresizingMaskIntoConstraints = false
     
+    var constraints: [NSLayoutConstraint] = []
+    
     if insets.top.isFinite {
       let c = view.topAnchor.constraint(equalTo: container.topAnchor, constant: insets.top)
-      c.isActive = true
+      constraints.append(c)
     } else {
       let c = view.topAnchor.constraint(greaterThanOrEqualTo: container.topAnchor, constant: 0)
-      c.isActive = true
+      constraints.append(c)
     }
     
     if insets.right.isFinite {
       let c = view.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -insets.right)
-      c.isActive = true
+      constraints.append(c)
     } else {
       let c = view.rightAnchor.constraint(lessThanOrEqualTo: container.rightAnchor, constant: 0)
-      c.isActive = true
+      constraints.append(c)
     }
     
     if insets.bottom.isFinite {
       let c = view.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -insets.bottom)
-      c.isActive = true
+      constraints.append(c)
     } else {
       let c = view.bottomAnchor.constraint(lessThanOrEqualTo: container.bottomAnchor, constant: 0)
-      c.isActive = true
+      constraints.append(c)
     }
     
     if insets.left.isFinite {
       let c = view.leftAnchor.constraint(equalTo: container.leftAnchor, constant: insets.left)
-      c.isActive = true
+      constraints.append(c)
     } else {
       let c = view.leftAnchor.constraint(greaterThanOrEqualTo: container.leftAnchor, constant: 0)
-      c.isActive = true
+      constraints.append(c)
     }
     
-    return BoxElement(container)
+    return BoxApplying(
+      rootElement: BoxElement(container),
+      constraints: result.constraints + constraints
+    )
+    
   }
   
 }
 
 public struct BoxCenter<Box : BoxType> : ContainerBoxType {
-
+  
   public let content: Box
   public let container: UIView
-
+  
   public init(container: () -> UIView = { UIView() }, @BoxBuilder content: () -> Box) {
     self.content = content()
     self.container = container()
   }
   
-  public func apply() -> BoxElement {
-
-    let view = content.apply().body
-
+  public func apply() -> BoxApplying {
+    
+    let result = content.apply()
+    
+    let view = result.rootElement.body
+    
     container.addSubview(view)
-
+    
     view.translatesAutoresizingMaskIntoConstraints = false
-
-    NSLayoutConstraint.activate([
-      view.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-      view.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-      ])
-
-    return BoxElement(container)
+    
+    return
+      BoxApplying(
+        rootElement: BoxElement(container),
+        constraints: result.constraints + [
+          view.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+          view.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+        ]
+    )
   }
 }
 
@@ -238,30 +275,31 @@ public struct BoxZStack : ContainerBoxType {
     self.container = container()
   }
   
-  public init(container: () -> UIView = { UIView() }, @BoxBuilder content: () -> BoxElement) {
+  public init<Box: BoxType>(container: () -> UIView = { UIView() }, @BoxBuilder content: () -> Box) {
     self.content = BoxMultiple { [content()] }
     self.container = container()
   }
   
-  public func apply() -> BoxElement {
+  public func apply() -> BoxApplying {
     
-    let views = content.apply().map { $0.body }
+    let results = content.apply()
     
-    views.forEach { view in
-      
-      container.addSubview(view)
-      view.translatesAutoresizingMaskIntoConstraints = false
-
-      NSLayoutConstraint.activate([
-        view.topAnchor.constraint(equalTo: container.topAnchor),
-        view.rightAnchor.constraint(equalTo: container.rightAnchor),
-        view.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-        view.leftAnchor.constraint(equalTo: container.leftAnchor),
-        ])
-      
-    }
-    
-    return BoxElement(container)
+    return
+      BoxApplying(
+        rootElement: BoxElement(container),
+        constraints: results.flatMap { $0.constraints } + results.map { $0.rootElement.body }.flatMap { view -> [NSLayoutConstraint] in
+          
+          container.addSubview(view)
+          view.translatesAutoresizingMaskIntoConstraints = false
+          
+          return [
+            view.topAnchor.constraint(equalTo: container.topAnchor),
+            view.rightAnchor.constraint(equalTo: container.rightAnchor),
+            view.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            view.leftAnchor.constraint(equalTo: container.leftAnchor),
+          ]
+        }
+    )
     
   }
   
@@ -299,9 +337,11 @@ public struct BoxVStack : ContainerBoxType {
     self.container = container()
   }
   
-  public func apply() -> BoxElement {
+  public func apply() -> BoxApplying {
     
-    let views = content.apply().map { $0.body }
+    let results = content.apply()
+    
+    let views = results.map { $0.rootElement.body }
     
     let stack = UIStackView(arrangedSubviews: views)
     stack.axis = .vertical
@@ -321,16 +361,18 @@ public struct BoxVStack : ContainerBoxType {
     
     stack.translatesAutoresizingMaskIntoConstraints = false
     
-    NSLayoutConstraint.activate([
-      stack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-      stack.topAnchor.constraint(greaterThanOrEqualTo: container.topAnchor),
-      stack.rightAnchor.constraint(equalTo: container.rightAnchor),
-      stack.bottomAnchor.constraint(lessThanOrEqualTo: container.bottomAnchor),
-      stack.leftAnchor.constraint(equalTo: container.leftAnchor),
-      ])
+    return
+      BoxApplying(
+        rootElement: BoxElement(container),
+        constraints: results.flatMap { $0.constraints } + [
+          stack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+          stack.topAnchor.constraint(greaterThanOrEqualTo: container.topAnchor),
+          stack.rightAnchor.constraint(equalTo: container.rightAnchor),
+          stack.bottomAnchor.constraint(lessThanOrEqualTo: container.bottomAnchor),
+          stack.leftAnchor.constraint(equalTo: container.leftAnchor),
+        ]
+    )
     
-    return BoxElement(container)
-
   }
   
 }
@@ -367,9 +409,11 @@ public struct BoxHStack : ContainerBoxType {
     self.container = container()
   }
   
-  public func apply() -> BoxElement {
+  public func apply() -> BoxApplying {
     
-    let views = content.apply().map { $0.body }
+    let results = content.apply()
+    
+    let views = results.map { $0.rootElement.body }
     
     let stack = UIStackView(arrangedSubviews: views)
     stack.axis = .horizontal
@@ -389,15 +433,17 @@ public struct BoxHStack : ContainerBoxType {
     
     stack.translatesAutoresizingMaskIntoConstraints = false
     
-    NSLayoutConstraint.activate([
-      stack.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-      stack.topAnchor.constraint(equalTo: container.topAnchor),
-      stack.rightAnchor.constraint(lessThanOrEqualTo: container.rightAnchor),
-      stack.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-      stack.leftAnchor.constraint(greaterThanOrEqualTo: container.leftAnchor),
-      ])
-    
-    return BoxElement(container)
+    return
+      BoxApplying(
+        rootElement: BoxElement(container),
+        constraints: results.flatMap { $0.constraints } + [
+          stack.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+          stack.topAnchor.constraint(equalTo: container.topAnchor),
+          stack.rightAnchor.constraint(lessThanOrEqualTo: container.rightAnchor),
+          stack.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+          stack.leftAnchor.constraint(greaterThanOrEqualTo: container.leftAnchor),
+        ]
+    )
   }
   
 }
@@ -410,7 +456,7 @@ public struct BoxVSpacer : BoxType {
     self.minLength = minLength
   }
   
-  public func apply() -> BoxElement {
+  public func apply() -> BoxApplying {
     
     let view = UIView()
     
@@ -421,9 +467,15 @@ public struct BoxVSpacer : BoxType {
     
     let c = view.heightAnchor.constraint(equalToConstant: 1000)
     c.priority = .fittingSizeLevel
-    c.isActive = true
     
-    return BoxElement(view)
+    return
+      BoxApplying(
+        rootElement: BoxElement(view),
+        constraints: [
+          c
+        ]
+    )
+    
   }
 }
 
@@ -435,7 +487,7 @@ public struct BoxHSpacer : BoxType {
     self.minLength = minLength
   }
   
-  public func apply() -> BoxElement {
+  public func apply() -> BoxApplying {
     
     let view = UIView()
     
@@ -446,8 +498,14 @@ public struct BoxHSpacer : BoxType {
     
     let c = view.widthAnchor.constraint(equalToConstant: 1000)
     c.priority = .fittingSizeLevel
-    c.isActive = true
     
-    return BoxElement(view)
+    return
+      BoxApplying(
+        rootElement: BoxElement(view),
+        constraints: [
+          c
+        ]
+    )
+    
   }
 }

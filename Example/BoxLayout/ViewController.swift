@@ -58,7 +58,16 @@ class ViewController: UIViewController {
               BoxElement(UIView.make(backgroundColor: .green))
                 .frame(width: 64, height: 64)
             }
-          }          
+            
+          }
+          
+          BoxZStack {
+            BoxElement(UIView.make(backgroundColor: .purple))
+              .frame(width: 200, height: 200)
+            BoxInset(insets: UIEdgeInsets.init(top: CGFloat.infinity, left: 20.0, bottom: 20, right: .infinity)) {
+              BoxElement(UILabel.make(text: "Helloooooooooooooooooooooooooooooooooooooooooooo"))
+            }
+          }
         }
       }
       
@@ -85,6 +94,7 @@ extension UILabel {
   
   static func make(text: String) -> UILabel {
     let label = UILabel()
+    label.numberOfLines = 0
     label.text = text
     return label
   }
