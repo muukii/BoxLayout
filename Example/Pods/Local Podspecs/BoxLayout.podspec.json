@@ -1,0 +1,24 @@
+{
+  "name": "BoxLayout",
+  "version": "0.1.0",
+  "summary": "A short description of BoxLayout.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/Muukii/BoxLayout",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Muukii": "muukii.app@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/Muukii/BoxLayout.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "swift_versions": "5.1",
+  "source_files": "BoxLayout/Classes/**/*",
+  "swift_version": "5.1"
+}

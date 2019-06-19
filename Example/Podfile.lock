@@ -1,0 +1,23 @@
+PODS:
+  - BoxLayout (0.1.0)
+  - Reveal-SDK (23)
+
+DEPENDENCIES:
+  - BoxLayout (from `../`)
+  - Reveal-SDK
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Reveal-SDK
+
+EXTERNAL SOURCES:
+  BoxLayout:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  BoxLayout: af9bd0282d5e2b2a2de44f1d8014cf77cc152ed5
+  Reveal-SDK: bb223749b198a2b9bad6043ec6ad748f99e7abe5
+
+PODFILE CHECKSUM: da478d5fdbea100a124a7cc2391082210c8bfd4b
+
+COCOAPODS: 1.7.1

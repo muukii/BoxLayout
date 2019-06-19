@@ -2,10 +2,11 @@ use_frameworks!
 
 target 'BoxLayout_Example' do
   pod 'BoxLayout', :path => '../'
+  pod 'Reveal-SDK'
 
   target 'BoxLayout_Tests' do
     inherit! :search_paths
 
-    
+
   end
 end

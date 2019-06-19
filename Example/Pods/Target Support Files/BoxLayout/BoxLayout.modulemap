@@ -1,0 +1,6 @@
+framework module BoxLayout {
+  umbrella header "BoxLayout-umbrella.h"
+
+  export *
+  module * { export * }
+}
