@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'BoxLayout_Example' do
+  pod 'BoxLayout', :path => '../'
+
+  target 'BoxLayout_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
