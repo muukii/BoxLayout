@@ -87,6 +87,11 @@ public protocol BoxType {
   func apply(resolver: inout BoxResolver) -> BoxElement
 }
 
+public protocol BoxFrameType where Self : BoxType {
+  
+  var frame: BoxFrame { get set }
+}
+
 public protocol ContainerBoxType : BoxType {
   
   var container: UIView { get }
@@ -117,14 +122,35 @@ public struct BoxMultiple {
   }
 }
 
-public struct BoxElement: BoxType {
+public struct BoxFrame {
   
-  public var width: CGFloat?
-  public var height: CGFloat?
+  public enum BoxSizing {
+    
+    public enum SideLength {
+      case width(CGFloat)
+      case height(CGFloat)
+    }
+    
+    case size(width: CGFloat?, height: CGFloat?)
+    case aspectRatio(CGSize, sideLength: SideLength?)
+  }
+  
+  public var sizing: BoxSizing?
+  
+}
+
+public struct BoxElement: BoxType, BoxFrameType {
+  
+  public var frame: BoxFrame = .init()
+  
   public let body: UIView
   
   public init(_ view: UIView) {
     self.body = view
+  }
+  
+  public init(view: () -> UIView) {
+    self.body = view()
   }
   
   public func apply(resolver: inout BoxResolver) -> BoxElement {
@@ -132,11 +158,7 @@ public struct BoxElement: BoxType {
     body.translatesAutoresizingMaskIntoConstraints = false
     
     resolver.append(
-      constraints: [
-        width.map { body.widthAnchor.constraint(equalToConstant: $0) },
-        height.map { body.heightAnchor.constraint(equalToConstant: $0) },
-        ]
-        .compactMap { $0 }
+      constraints: makeConstraints(view: body)
     )
 
     return self
@@ -144,13 +166,61 @@ public struct BoxElement: BoxType {
  
 }
 
-extension BoxElement {
+extension BoxFrameType {
   
   public func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Modified<BoxElement> {
     var _self = self
-    _self.width = width
-    _self.height = height
+    _self.frame.sizing = .size(width: width, height: height)
     return _self
+  }
+  
+  public func aspectRatio(ratio: CGSize, sideLength: BoxFrame.BoxSizing.SideLength? = nil) -> Modified<BoxElement> {
+    var _self = self
+    _self.frame.sizing = .aspectRatio(ratio, sideLength: sideLength)
+    return _self
+  }
+  
+  func makeConstraints(view: UIView) -> [NSLayoutConstraint] {
+    
+    var constraints: [NSLayoutConstraint] = []
+    
+    switch frame.sizing {
+    case let .some(.size(width, height)):
+      if let width = width {
+        constraints.append(
+          view.widthAnchor.constraint(equalToConstant: width)
+        )
+      }
+      if let height = height {
+        constraints.append(
+          view.heightAnchor.constraint(equalToConstant: height)
+        )
+      }
+      
+    case let .some(.aspectRatio(ratio, sideLength)):
+      
+      constraints.append(
+        view.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: ratio.height / ratio.width)
+      )
+      
+      switch sideLength {
+      case .some(.width(let width)):
+        constraints.append(
+          view.widthAnchor.constraint(equalToConstant: width)
+        )
+      case .some(.height(let height)):
+        constraints.append(
+          view.heightAnchor.constraint(equalToConstant: height)
+        )
+      case .none:
+        break
+      }
+      
+    case .none:
+      break
+    }
+    
+    return constraints
   }
   
   #if swift(>=5.1)

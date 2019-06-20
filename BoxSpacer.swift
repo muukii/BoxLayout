@@ -22,9 +22,9 @@ public struct BoxVSpacer : ContainerBoxType {
       let c = container.heightAnchor.constraint(greaterThanOrEqualToConstant: minLength)
       resolver.append(constraint: c)
     }
-    
+        
     let c = container.heightAnchor.constraint(equalToConstant: 1000)
-    c.priority = .fittingSizeLevel
+    c.priority = .init(60)
     resolver.append(constraint: c)
     
     resolver.append(container: container)
@@ -51,7 +51,7 @@ public struct BoxHSpacer : BoxType {
     }
     
     let c = container.widthAnchor.constraint(equalToConstant: 1000)
-    c.priority = .fittingSizeLevel
+    c.priority = .init(60)
     resolver.append(constraint: c)
     
     resolver.append(container: container)

@@ -10,6 +10,7 @@
 		40910094069FF2532538DE7B /* Pods_BoxLayout_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFB89A0B38764FD906C6A5ED /* Pods_BoxLayout_Tests.framework */; };
 		4B8FC82E22BBC3DC00460D1B /* UpdateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B8FC82D22BBC3DC00460D1B /* UpdateViewController.swift */; };
 		4B8FC83022BBC40D00460D1B /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B8FC82F22BBC40D00460D1B /* Extension.swift */; };
+		4BDC0A9A22BBC940004B4C23 /* LayoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BDC0A9922BBC940004B4C23 /* LayoutViewController.swift */; };
 		5159FB6736A5EB82942B08A1 /* Pods_BoxLayout_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E7ED37E0D4268F978A172A /* Pods_BoxLayout_Example.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
@@ -34,6 +35,7 @@
 		1C9456F44FC63F99E3762865 /* Pods-BoxLayout_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BoxLayout_Tests.release.xcconfig"; path = "Target Support Files/Pods-BoxLayout_Tests/Pods-BoxLayout_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		4B8FC82D22BBC3DC00460D1B /* UpdateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateViewController.swift; sourceTree = "<group>"; };
 		4B8FC82F22BBC40D00460D1B /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		4BDC0A9922BBC940004B4C23 /* LayoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutViewController.swift; sourceTree = "<group>"; };
 		5D60D942E05304357F249E33 /* BoxLayout.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = BoxLayout.podspec; path = ../BoxLayout.podspec; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* BoxLayout_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BoxLayout_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				4B8FC82D22BBC3DC00460D1B /* UpdateViewController.swift */,
+				4BDC0A9922BBC940004B4C23 /* LayoutViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -339,6 +342,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BDC0A9A22BBC940004B4C23 /* LayoutViewController.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				4B8FC82E22BBC3DC00460D1B /* UpdateViewController.swift in Sources */,

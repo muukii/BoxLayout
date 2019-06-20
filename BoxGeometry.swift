@@ -28,6 +28,17 @@ public struct BoxPadding<Box : BoxType> : ContainerBoxType {
   
   #else
   
+  public init(
+    container: () -> UIView = { BoxNonRenderingView() },
+    padding: UIEdgeInsets,
+    content: () -> Box
+    ) {
+    
+    self.content = content()
+    self.container = container()
+    self.padding = padding
+  }
+  
   #endif
   
   public func apply(resolver: inout BoxResolver) -> BoxElement {
@@ -60,13 +71,28 @@ public struct BoxInset<Box: BoxType> : ContainerBoxType {
   
   #if swift(>=5.1)
   
-  public init(container: () -> UIView = { BoxNonRenderingView() }, insets: UIEdgeInsets, @BoxBuilder content: () -> Box) {
+  public init(
+    container: () -> UIView = { BoxNonRenderingView() },
+    insets: UIEdgeInsets,
+    @BoxBuilder content: () -> Box
+    ) {
     self.content = content()
     self.container = container()
     self.insets = insets
   }
   
   #else
+  
+  public init(
+    container: () -> UIView = { BoxNonRenderingView() },
+    insets: UIEdgeInsets,
+    content: () -> Box
+    ) {
+    
+    self.content = content()
+    self.container = container()
+    self.insets = insets
+  }
   
   #endif
   
@@ -129,12 +155,23 @@ public struct BoxCenter<Box : BoxType> : ContainerBoxType {
   
   #if swift(>=5.1)
   
-  public init(container: () -> UIView = { BoxNonRenderingView() }, @BoxBuilder content: () -> Box) {
+  public init(
+    container: () -> UIView = { BoxNonRenderingView() },
+    @BoxBuilder content: () -> Box
+    ) {
     self.content = content()
     self.container = container()
   }
   
   #else
+  
+  public init(
+    container: () -> UIView = { BoxNonRenderingView() },
+    content: () -> Box
+    ) {
+    self.content = content()
+    self.container = container()
+  }
   
   #endif
   
@@ -150,6 +187,11 @@ public struct BoxCenter<Box : BoxType> : ContainerBoxType {
     resolver.append(constraints: [
       view.centerYAnchor.constraint(equalTo: container.centerYAnchor),
       view.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+      
+      view.topAnchor.constraint(greaterThanOrEqualTo: container.topAnchor),
+      view.rightAnchor.constraint(lessThanOrEqualTo: container.rightAnchor),
+      view.bottomAnchor.constraint(lessThanOrEqualTo: container.bottomAnchor),
+      view.leftAnchor.constraint(greaterThanOrEqualTo: container.leftAnchor),
       ])
     
     return BoxElement(container)
