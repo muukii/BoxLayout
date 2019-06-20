@@ -13,6 +13,8 @@ public struct BoxPadding<Box : BoxType> : ContainerBoxType {
   public let content: Box
   public let container: UIView
   
+  #if swift(>=5.1)
+  
   public init(
     container: () -> UIView = { BoxNonRenderingView() },
     padding: UIEdgeInsets,
@@ -24,28 +26,30 @@ public struct BoxPadding<Box : BoxType> : ContainerBoxType {
     self.padding = padding
   }
   
-  public func apply() -> BoxApplying {
+  #else
+  
+  #endif
+  
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
-    let result = content.apply()
-    
-    let view = result.rootElement.body
+    let result = content.apply(resolver: &resolver)
+    let view = result.body
     
     container.addSubview(view)
-    
     view.translatesAutoresizingMaskIntoConstraints = false
     
-    return
-      BoxApplying(
-        rootElement: BoxElement(container),
-        constraints: result.constraints + [
-          view.topAnchor.constraint(equalTo: container.topAnchor, constant: padding.top),
-          view.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -padding.right),
-          view.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -padding.bottom),
-          view.leftAnchor.constraint(equalTo: container.leftAnchor, constant: padding.left),
-        ]
-    )
+    resolver.append(container: container)
+    resolver.append(constraints: [
+      view.topAnchor.constraint(equalTo: container.topAnchor, constant: padding.top),
+      view.rightAnchor.constraint(equalTo: container.rightAnchor, constant: -padding.right),
+      view.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -padding.bottom),
+      view.leftAnchor.constraint(equalTo: container.leftAnchor, constant: padding.left),
+      ])
+    
+    return BoxElement(container)
     
   }
+ 
 }
 
 public struct BoxInset<Box: BoxType> : ContainerBoxType {
@@ -54,22 +58,28 @@ public struct BoxInset<Box: BoxType> : ContainerBoxType {
   public let content: Box
   public let container: UIView
   
+  #if swift(>=5.1)
+  
   public init(container: () -> UIView = { BoxNonRenderingView() }, insets: UIEdgeInsets, @BoxBuilder content: () -> Box) {
     self.content = content()
     self.container = container()
     self.insets = insets
   }
   
-  public func apply() -> BoxApplying {
+  #else
+  
+  #endif
+  
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
-    let result = content.apply()
-    
-    let view = result.rootElement.body
+    let result = content.apply(resolver: &resolver)
+    let view = result.body
     
     container.addSubview(view)
-    
     view.translatesAutoresizingMaskIntoConstraints = false
     
+    resolver.append(container: container)
+   
     var constraints: [NSLayoutConstraint] = []
     
     if insets.top.isFinite {
@@ -104,10 +114,9 @@ public struct BoxInset<Box: BoxType> : ContainerBoxType {
       constraints.append(c)
     }
     
-    return BoxApplying(
-      rootElement: BoxElement(container),
-      constraints: result.constraints + constraints
-    )
+    resolver.append(constraints: constraints)
+    
+    return BoxElement(container)
     
   }
   
@@ -118,28 +127,31 @@ public struct BoxCenter<Box : BoxType> : ContainerBoxType {
   public let content: Box
   public let container: UIView
   
+  #if swift(>=5.1)
+  
   public init(container: () -> UIView = { BoxNonRenderingView() }, @BoxBuilder content: () -> Box) {
     self.content = content()
     self.container = container()
   }
   
-  public func apply() -> BoxApplying {
+  #else
+  
+  #endif
+  
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
-    let result = content.apply()
-    
-    let view = result.rootElement.body
+    let result = content.apply(resolver: &resolver)
+    let view = result.body
     
     container.addSubview(view)
-    
     view.translatesAutoresizingMaskIntoConstraints = false
     
-    return
-      BoxApplying(
-        rootElement: BoxElement(container),
-        constraints: result.constraints + [
-          view.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-          view.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-        ]
-    )
+    resolver.append(container: container)
+    resolver.append(constraints: [
+      view.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+      view.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+      ])
+    
+    return BoxElement(container)
   }
 }

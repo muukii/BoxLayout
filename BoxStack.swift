@@ -12,6 +12,8 @@ public struct BoxZStack : ContainerBoxType {
   public let content: BoxMultiple
   public let container: UIView
   
+  #if swift(>=5.1)
+  
   public init(container: () -> UIView = { BoxNonRenderingView() }, @BoxBuilder content: () -> BoxMultiple) {
     self.content = content()
     self.container = container()
@@ -22,27 +24,27 @@ public struct BoxZStack : ContainerBoxType {
     self.container = container()
   }
   
-  public func apply() -> BoxApplying {
+  #else
+  
+  #endif
+  
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
-    let results = content.apply()
+    resolver.append(container: container)    
+    resolver.append(constraints: content.apply(resolver: &resolver).map { $0.body }.flatMap { view -> [NSLayoutConstraint] in
+      
+      container.addSubview(view)
+      view.translatesAutoresizingMaskIntoConstraints = false
+      
+      return [
+        view.topAnchor.constraint(equalTo: container.topAnchor),
+        view.rightAnchor.constraint(equalTo: container.rightAnchor),
+        view.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        view.leftAnchor.constraint(equalTo: container.leftAnchor),
+      ]
+    })
     
-    return
-      BoxApplying(
-        rootElement: BoxElement(container),
-        constraints: results.flatMap { $0.constraints } + results.map { $0.rootElement.body }.flatMap { view -> [NSLayoutConstraint] in
-          
-          container.addSubview(view)
-          view.translatesAutoresizingMaskIntoConstraints = false
-          
-          return [
-            view.topAnchor.constraint(equalTo: container.topAnchor),
-            view.rightAnchor.constraint(equalTo: container.rightAnchor),
-            view.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            view.leftAnchor.constraint(equalTo: container.leftAnchor),
-          ]
-        }
-    )
-    
+    return BoxElement(container)
   }
   
 }
@@ -58,6 +60,8 @@ public struct BoxVStack : ContainerBoxType {
   public let alignment: HorizontalAlignment
   public let content: BoxMultiple
   public let container: UIView
+  
+  #if swift(>=5.1)
   
   public init(
     container: () -> UIView = { BoxNonRenderingView() },
@@ -79,11 +83,15 @@ public struct BoxVStack : ContainerBoxType {
     self.container = container()
   }
   
-  public func apply() -> BoxApplying {
+  #else
+  
+  #endif
+  
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
-    let results = content.apply()
+    let results = content.apply(resolver: &resolver)
     
-    let views = results.map { $0.rootElement.body }
+    let views = results.map { $0.body }
     
     let stack = UIStackView(arrangedSubviews: views)
     stack.axis = .vertical
@@ -103,18 +111,16 @@ public struct BoxVStack : ContainerBoxType {
     
     stack.translatesAutoresizingMaskIntoConstraints = false
     
-    return
-      BoxApplying(
-        rootElement: BoxElement(container),
-        constraints: results.flatMap { $0.constraints } + [
-          stack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-          stack.topAnchor.constraint(greaterThanOrEqualTo: container.topAnchor),
-          stack.rightAnchor.constraint(equalTo: container.rightAnchor),
-          stack.bottomAnchor.constraint(lessThanOrEqualTo: container.bottomAnchor),
-          stack.leftAnchor.constraint(equalTo: container.leftAnchor),
-        ]
-    )
+    resolver.append(container: container)
+    resolver.append(constraints: [
+      stack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+      stack.topAnchor.constraint(greaterThanOrEqualTo: container.topAnchor),
+      stack.rightAnchor.constraint(equalTo: container.rightAnchor),
+      stack.bottomAnchor.constraint(lessThanOrEqualTo: container.bottomAnchor),
+      stack.leftAnchor.constraint(equalTo: container.leftAnchor),
+      ])
     
+    return BoxElement(container)
   }
   
 }
@@ -130,6 +136,8 @@ public struct BoxHStack : ContainerBoxType {
   public let alignment: VerticalAlignment
   public let content: BoxMultiple
   public let container: UIView
+  
+  #if swift(>=5.1)
   
   public init(
     container: () -> UIView = { BoxNonRenderingView() },
@@ -151,13 +159,18 @@ public struct BoxHStack : ContainerBoxType {
     self.container = container()
   }
   
-  public func apply() -> BoxApplying {
+  #else
+  
+  #endif
+  
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
-    let results = content.apply()
+    let results = content.apply(resolver: &resolver)
     
-    let views = results.map { $0.rootElement.body }
+    let views = results.map { $0.body }
     
     let stack = UIStackView(arrangedSubviews: views)
+    
     stack.axis = .horizontal
     
     switch alignment {
@@ -175,17 +188,18 @@ public struct BoxHStack : ContainerBoxType {
     
     stack.translatesAutoresizingMaskIntoConstraints = false
     
-    return
-      BoxApplying(
-        rootElement: BoxElement(container),
-        constraints: results.flatMap { $0.constraints } + [
-          stack.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-          stack.topAnchor.constraint(equalTo: container.topAnchor),
-          stack.rightAnchor.constraint(lessThanOrEqualTo: container.rightAnchor),
-          stack.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-          stack.leftAnchor.constraint(greaterThanOrEqualTo: container.leftAnchor),
-        ]
+    resolver.append(container: container)
+    resolver.append(constraints:
+      [
+        stack.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+        stack.topAnchor.constraint(equalTo: container.topAnchor),
+        stack.rightAnchor.constraint(lessThanOrEqualTo: container.rightAnchor),
+        stack.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        stack.leftAnchor.constraint(greaterThanOrEqualTo: container.leftAnchor),
+      ]
     )
+    
+    return BoxElement(container)
   }
   
 }

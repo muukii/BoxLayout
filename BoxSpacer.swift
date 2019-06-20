@@ -7,64 +7,57 @@
 
 import Foundation
 
-public struct BoxVSpacer : BoxType {
+public struct BoxVSpacer : ContainerBoxType {
   
   public let minLength: CGFloat?
+  public let container: UIView = UIView()
   
   public init(minLength: CGFloat? = nil) {
     self.minLength = minLength
   }
   
-  public func apply() -> BoxApplying {
-    
-    let view = UIView()
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
     if let minLength = minLength {
-      let c = view.heightAnchor.constraint(greaterThanOrEqualToConstant: minLength)
-      c.isActive = true
+      let c = container.heightAnchor.constraint(greaterThanOrEqualToConstant: minLength)
+      resolver.append(constraint: c)
     }
     
-    let c = view.heightAnchor.constraint(equalToConstant: 1000)
+    let c = container.heightAnchor.constraint(equalToConstant: 1000)
     c.priority = .fittingSizeLevel
+    resolver.append(constraint: c)
     
-    return
-      BoxApplying(
-        rootElement: BoxElement(view),
-        constraints: [
-          c
-        ]
-    )
-    
+    resolver.append(container: container)
+  
+    return BoxElement(container)
   }
+  
 }
 
 public struct BoxHSpacer : BoxType {
   
   public let minLength: CGFloat?
+  public let container: UIView = UIView()
   
   public init(minLength: CGFloat? = nil) {
     self.minLength = minLength
   }
   
-  public func apply() -> BoxApplying {
-    
-    let view = UIView()
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
     if let minLength = minLength {
-      let c = view.widthAnchor.constraint(greaterThanOrEqualToConstant: minLength)
-      c.isActive = true
+      let c = container.widthAnchor.constraint(greaterThanOrEqualToConstant: minLength)
+      resolver.append(constraint: c)
     }
     
-    let c = view.widthAnchor.constraint(equalToConstant: 1000)
+    let c = container.widthAnchor.constraint(equalToConstant: 1000)
     c.priority = .fittingSizeLevel
+    resolver.append(constraint: c)
     
-    return
-      BoxApplying(
-        rootElement: BoxElement(view),
-        constraints: [
-          c
-        ]
-    )
+    resolver.append(container: container)
     
+    return BoxElement(container)
   }
+  
+
 }

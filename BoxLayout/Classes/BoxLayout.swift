@@ -8,41 +8,67 @@
 
 import UIKit
 
-public final class BoxContainerView : UIView {
+public final class BoxContainerView<Box: BoxType> : UIView {
   
   private(set) public var currentConstraints: [NSLayoutConstraint] = []
   
-  public init<B : BoxType>(content: () -> B) {
+  private var resolved: BoxResolver?
+  
+  private let contentFactory: () -> Box
+  
+  public init(content: @escaping () -> Box) {
+    self.contentFactory = content
     super.init(frame: .zero)
-    
-    let content = content()
-    let result = content.apply()
-    let view = result.rootElement.body
-    
-    addSubview(view)
-    
-    view.translatesAutoresizingMaskIntoConstraints = false
-    
-    NSLayoutConstraint.activate(result.constraints + [
-      view.topAnchor.constraint(equalTo: topAnchor),
-      view.rightAnchor.constraint(equalTo: rightAnchor),
-      view.bottomAnchor.constraint(equalTo: bottomAnchor),
-      view.leftAnchor.constraint(equalTo: leftAnchor),
-      ])
-    
-    currentConstraints = result.constraints
   }
   
   @available(*, unavailable)
   public required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+  
+  public func update() {
+    
+    cleanup()
+    
+    let content = contentFactory()
+    var resolver = BoxResolver()
+    let result = content.apply(resolver: &resolver)
+    let view = result.body
+    
+    addSubview(view)
+    
+    view.translatesAutoresizingMaskIntoConstraints = false
+    
+    NSLayoutConstraint.activate(resolver.constraints + [
+      view.topAnchor.constraint(equalTo: topAnchor),
+      view.rightAnchor.constraint(equalTo: rightAnchor),
+      view.bottomAnchor.constraint(equalTo: bottomAnchor),
+      view.leftAnchor.constraint(equalTo: leftAnchor),
+      ])
+    
+    resolved = resolver
+    
+  }
+  
+  private func cleanup() {
+    
+    guard let resolved = resolved else { return }
+    
+    subviews.forEach { $0.removeFromSuperview() }    
+    NSLayoutConstraint.deactivate(resolved.constraints)
+    resolved.containers.forEach { $0.removeFromSuperview() }
+  }
+  
 }
 
 public struct BoxResolver {
   
-  public var constraints: [NSLayoutConstraint]
-  public var containers: [UIView]
+  public var constraints: [NSLayoutConstraint] = []
+  public var containers: [UIView] = []
+  
+  mutating func append(constraint: NSLayoutConstraint) {
+    self.constraints.append(constraint)
+  }
   
   mutating func append(constraints: [NSLayoutConstraint]) {
     self.constraints.append(contentsOf: constraints)
@@ -54,23 +80,11 @@ public struct BoxResolver {
   
 }
 
-public struct BoxApplying {
-  
-  public let rootElement: BoxElement
-  public let constraints: [NSLayoutConstraint]
-  
-  init(rootElement: BoxElement, constraints: [NSLayoutConstraint]) {
-    self.rootElement = rootElement
-    self.constraints = constraints
-  }
-  
-}
-
 public protocol BoxType {
   
   typealias Modified<T> = Self
   
-  func apply() -> BoxApplying
+  func apply(resolver: inout BoxResolver) -> BoxElement
 }
 
 public protocol ContainerBoxType : BoxType {
@@ -84,9 +98,10 @@ public struct BoxEmpty : BoxType {
     
   }
   
-  public func apply() -> BoxApplying {
-    return .init(rootElement: BoxElement(UIView()), constraints: [])
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
+    return BoxElement(UIView())
   }
+  
 }
 
 public struct BoxMultiple {
@@ -97,9 +112,8 @@ public struct BoxMultiple {
     self.contents = contents()
   }
   
-  public func apply() -> [BoxApplying] {
-    let result = contents.compactMap { $0.apply() }
-    return result
+  public func apply(resolver: inout BoxResolver) -> [BoxElement] {
+    return contents.compactMap { $0.apply(resolver: &resolver) }
   }
 }
 
@@ -113,20 +127,21 @@ public struct BoxElement: BoxType {
     self.body = view
   }
   
-  public func apply() -> BoxApplying {
+  public func apply(resolver: inout BoxResolver) -> BoxElement {
     
     body.translatesAutoresizingMaskIntoConstraints = false
     
-    return
-      BoxApplying(
-        rootElement: self,
-        constraints: [
-          width.map { body.widthAnchor.constraint(equalToConstant: $0) },
-          height.map { body.heightAnchor.constraint(equalToConstant: $0) },
-          ].compactMap { $0 }
+    resolver.append(
+      constraints: [
+        width.map { body.widthAnchor.constraint(equalToConstant: $0) },
+        height.map { body.heightAnchor.constraint(equalToConstant: $0) },
+        ]
+        .compactMap { $0 }
     )
-    
+
+    return self
   }
+ 
 }
 
 extension BoxElement {
@@ -138,7 +153,13 @@ extension BoxElement {
     return _self
   }
   
+  #if swift(>=5.1)
+  
   public func padding(_ padding: UIEdgeInsets) -> BoxPadding<Self> {
     BoxPadding(padding: padding, content: { self })
   }
+  
+  #else
+  
+  #endif
 }
