@@ -12,22 +12,28 @@ import BoxLayout
 
 final class LayoutViewController : UIViewController {
   
+  private let top = UIView.make(backgroundColor: .red)
+  private let section = UIView.make(backgroundColor: .orange)
+  private let name = UILabel.make(text: "@Muukii")
+  private let bg = UIView.make(backgroundColor: .blue)
+  private let age = UILabel.make(text: "28")
+
   override func viewDidLoad() {
     super.viewDidLoad()
     
     let root = BoxContainerView {
       BoxCenter {
         BoxVStack {
-          BoxElement(UIView.make(backgroundColor: .red))
+          BoxElement { self.top }
             .aspectRatio(ratio: CGSize(width: 1, height: 1))
-          BoxElement(UIView.make(backgroundColor: .orange))
+          BoxElement { self.section }
             .aspectRatio(ratio: CGSize(width: 1, height: 0.2))
           BoxZStack {
-            BoxElement(UIView.make(backgroundColor: .blue))
+            BoxElement { self.bg }
             BoxHStack {
-              BoxElement { UILabel.make(text: "@Muukii") }
+              BoxElement { self.name }
               BoxHSpacer()
-              BoxElement { UILabel.make(text: "@Muukii") }
+              BoxElement { self.age }
             }
           }
           }
