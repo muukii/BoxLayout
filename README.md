@@ -5,6 +5,11 @@
 [![License](https://img.shields.io/cocoapods/l/BoxLayout.svg?style=flat)](https://cocoapods.org/pods/BoxLayout)
 [![Platform](https://img.shields.io/cocoapods/p/BoxLayout.svg?style=flat)](https://cocoapods.org/pods/BoxLayout)
 
+# What this is
+
+BoxLayout creates a set of NSLayoutConstraints with DSL Style.
+DSL is inspired by SwiftUI and other Flexbox style libraries.
+
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
