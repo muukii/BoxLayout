@@ -7,7 +7,7 @@
 
 # What this is
 
-BoxLayout creates a set of NSLayoutConstraints with DSL Style.
+BoxLayout creates a set of NSLayoutConstraints with DSL Style.<br>
 DSL is inspired by SwiftUI and other Flexbox style libraries.
 
 ## Example
