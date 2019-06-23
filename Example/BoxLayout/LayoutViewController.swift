@@ -12,39 +12,59 @@ import BoxLayout
 
 final class LayoutViewController : UIViewController {
   
+  private let myView = MyView()
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    myView.toggleView.addTarget(self, action: #selector(valueChanged), for: .valueChanged)
+    
+    myView.update()
+    
+    view.addSubview(myView)
+    myView.frame = view.bounds
+    myView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+  }
+  
+  @objc private func valueChanged() {
+    myView.flag = myView.toggleView.isOn
+    myView.update()
+  }
+}
+
+final class MyView: BoxContainerView {
+  
+  let toggleView = UISwitch()
+  var flag: Bool = false
+  
   private let top = UIView.make(backgroundColor: .red)
   private let section = UIView.make(backgroundColor: .orange)
   private let name = UILabel.make(text: "@Muukii")
   private let bg = UIView.make(backgroundColor: .blue)
   private let age = UILabel.make(text: "28")
-
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    
-    let root = BoxContainerView {
-      BoxCenter {
-        BoxVStack {
-          BoxElement { self.top }
+  
+  override func boxLayoutThatFits() -> BoxType {
+    BoxCenter {      
+      BoxVStack {
+        BoxElement { toggleView }
+        BoxEmpty()
+          .frame(height: 20)
+        if flag {
+          BoxElement { top }
             .aspectRatio(ratio: CGSize(width: 1, height: 1))
-          BoxElement { self.section }
-            .aspectRatio(ratio: CGSize(width: 1, height: 0.2))
-          BoxZStack {
-            BoxElement { self.bg }
-            BoxHStack {
-              BoxElement { self.name }
-              BoxHSpacer()
-              BoxElement { self.age }
-            }
+        }
+        BoxElement { section }
+          .aspectRatio(ratio: CGSize(width: 1, height: 0.2))
+        BoxZStack {
+          BoxElement { bg }
+          BoxHStack {
+            BoxElement { name }
+            BoxHSpacer()
+            BoxElement { age }
           }
-          }
-          .frame(width: 200, height: nil)
-      }
+        }
+        }
+        .frame(width: 200, height: nil)
     }
-    
-    root.update()
-    
-    view.addSubview(root)
-    root.frame = view.bounds
-    root.autoresizingMask = [.flexibleWidth, .flexibleHeight]
   }
 }

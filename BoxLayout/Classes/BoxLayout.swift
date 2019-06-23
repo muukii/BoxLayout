@@ -8,16 +8,13 @@
 
 import UIKit
 
-public final class BoxContainerView<Box: BoxType> : UIView {
+open class BoxContainerView : UIView {
   
   private(set) public var currentConstraints: [NSLayoutConstraint] = []
   
   private var resolved: BoxResolver?
   
-  private let contentFactory: () -> Box
-  
-  public init(content: @escaping () -> Box) {
-    self.contentFactory = content
+  public init() {
     super.init(frame: .zero)
   }
   
@@ -26,14 +23,21 @@ public final class BoxContainerView<Box: BoxType> : UIView {
     fatalError("init(coder:) has not been implemented")
   }
   
+  open func boxLayoutThatFits() -> BoxType {
+    return BoxEmpty()
+  }
+  
   public func update() {
     
     cleanup()
     
-    let content = contentFactory()
+    let content = boxLayoutThatFits()
     var resolver = BoxResolver()
     let result = content.apply(resolver: &resolver)
-    let view = result.body
+    guard case .single(let element) = result else {
+      fatalError()
+    }
+    let view = element.body
     
     addSubview(view)
     
@@ -80,11 +84,25 @@ public struct BoxResolver {
   
 }
 
+public enum BoxApplyResult {
+  case single(BoxElement)
+  case multiple([BoxElement])
+  
+  var elements: [BoxElement] {
+    switch self {
+    case .single(let e):
+      return [e]
+    case .multiple(let e):
+      return e
+    }
+  }
+}
+
 public protocol BoxType {
   
   typealias Modified<T> = Self
   
-  func apply(resolver: inout BoxResolver) -> BoxElement
+  func apply(resolver: inout BoxResolver) -> BoxApplyResult
 }
 
 public protocol BoxFrameType where Self : BoxType {
@@ -97,19 +115,27 @@ public protocol ContainerBoxType : BoxType {
   var container: UIView { get }
 }
 
-public struct BoxEmpty : BoxType {
+public struct BoxEmpty : BoxType, BoxFrameType, ContainerBoxType {
+  
+  public let container: UIView = BoxNonRenderingView()
+  
+  public var frame: BoxFrame = .init()
   
   public init() {
     
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxElement {
-    return BoxElement(UIView())
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+    
+    resolver.append(container: container)
+    resolver.append(constraints: makeConstraints(view: container))
+    
+    return .single(BoxElement(container))
   }
   
 }
 
-public struct BoxMultiple {
+public struct BoxMultiple : BoxType {
   
   public let contents: [BoxType]
   
@@ -117,9 +143,46 @@ public struct BoxMultiple {
     self.contents = contents()
   }
   
-  public func apply(resolver: inout BoxResolver) -> [BoxElement] {
-    return contents.compactMap { $0.apply(resolver: &resolver) }
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+    .multiple(
+      contents.flatMap { r -> [BoxElement] in
+        switch r.apply(resolver: &resolver) {
+        case .single(let element):
+          return [element]
+        case .multiple(let elements):
+          return elements
+        }
+      }
+    )
+    
   }
+}
+
+public struct BoxCondition<TrueContent : BoxType, FalseContent : BoxType> : BoxType {
+  
+  let trueContent: TrueContent?
+  let falseContent: FalseContent?
+  
+  init(trueContent: TrueContent) {
+    self.trueContent = trueContent
+    self.falseContent = nil
+  }
+  
+  init(falseContent: FalseContent) {
+    self.trueContent = nil
+    self.falseContent = falseContent
+  }
+  
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+    if let trueContent = trueContent {
+      return trueContent.apply(resolver: &resolver)
+    }
+    if let falseContent = falseContent {
+      return falseContent.apply(resolver: &resolver)
+    }
+    fatalError()
+  }
+  
 }
 
 public struct BoxFrame {
@@ -153,7 +216,7 @@ public struct BoxElement: BoxType, BoxFrameType {
     self.body = view()
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxElement {
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
     
     body.translatesAutoresizingMaskIntoConstraints = false
     
@@ -161,7 +224,7 @@ public struct BoxElement: BoxType, BoxFrameType {
       constraints: makeConstraints(view: body)
     )
 
-    return self
+    return .single(self)
   }
  
 }

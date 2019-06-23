@@ -16,7 +16,7 @@ public struct BoxVSpacer : ContainerBoxType {
     self.minLength = minLength
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxElement {
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
     
     if let minLength = minLength {
       let c = container.heightAnchor.constraint(greaterThanOrEqualToConstant: minLength)
@@ -29,7 +29,7 @@ public struct BoxVSpacer : ContainerBoxType {
     
     resolver.append(container: container)
   
-    return BoxElement(container)
+    return .single(BoxElement(container))
   }
   
 }
@@ -43,7 +43,7 @@ public struct BoxHSpacer : BoxType {
     self.minLength = minLength
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxElement {
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
     
     if let minLength = minLength {
       let c = container.widthAnchor.constraint(greaterThanOrEqualToConstant: minLength)
@@ -56,7 +56,7 @@ public struct BoxHSpacer : BoxType {
     
     resolver.append(container: container)
     
-    return BoxElement(container)
+    return .single(BoxElement(container))
   }
   
 

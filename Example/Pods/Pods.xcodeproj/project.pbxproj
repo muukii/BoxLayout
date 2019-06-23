@@ -24,7 +24,7 @@
 		1F1B00E2CC4404A2BC6307776AB7A87E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
 		4229221D1CA95696E8FCD6AC2F728B81 /* BoxLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1336C65B8EE85AFB07B4F4A7C1104B1C /* BoxLayout.swift */; };
 		4B268F9B22BBF00200D692B3 /* NSLayoutConstraint+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B268F9A22BBF00200D692B3 /* NSLayoutConstraint+Util.swift */; };
-		4B7CE25B22BA5D1400F5E63A /* BoxBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CE25A22BA5D1400F5E63A /* BoxBuilder.swift */; };
+		4B7CE25B22BA5D1400F5E63A /* BoxMultipleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CE25A22BA5D1400F5E63A /* BoxMultipleBuilder.swift */; };
 		4B7CE27D22BB1A3900F5E63A /* BoxStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CE27C22BB1A3900F5E63A /* BoxStack.swift */; };
 		4B7CE27F22BB1AD900F5E63A /* BoxSpacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CE27E22BB1AD900F5E63A /* BoxSpacer.swift */; };
 		4B7CE28122BB1B2E00F5E63A /* BoxGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7CE28022BB1B2E00F5E63A /* BoxGeometry.swift */; };
@@ -74,7 +74,7 @@
 		44395366AEA97FC0CD017092BA32800D /* Pods-BoxLayout_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-BoxLayout_Tests-umbrella.h"; sourceTree = "<group>"; };
 		4AA2AF8B93DB9343FB11CF23E274C0A0 /* Reveal-SDK.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Reveal-SDK.xcconfig"; sourceTree = "<group>"; };
 		4B268F9A22BBF00200D692B3 /* NSLayoutConstraint+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSLayoutConstraint+Util.swift"; sourceTree = "<group>"; };
-		4B7CE25A22BA5D1400F5E63A /* BoxBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxBuilder.swift; sourceTree = "<group>"; };
+		4B7CE25A22BA5D1400F5E63A /* BoxMultipleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxMultipleBuilder.swift; sourceTree = "<group>"; };
 		4B7CE27C22BB1A3900F5E63A /* BoxStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxStack.swift; sourceTree = "<group>"; };
 		4B7CE27E22BB1AD900F5E63A /* BoxSpacer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxSpacer.swift; sourceTree = "<group>"; };
 		4B7CE28022BB1B2E00F5E63A /* BoxGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxGeometry.swift; sourceTree = "<group>"; };
@@ -191,7 +191,7 @@
 				4B7CE27E22BB1AD900F5E63A /* BoxSpacer.swift */,
 				4B7CE28022BB1B2E00F5E63A /* BoxGeometry.swift */,
 				4B7CE27C22BB1A3900F5E63A /* BoxStack.swift */,
-				4B7CE25A22BA5D1400F5E63A /* BoxBuilder.swift */,
+				4B7CE25A22BA5D1400F5E63A /* BoxMultipleBuilder.swift */,
 				4B7CE28222BB21BF00F5E63A /* NonRenderingView.swift */,
 				7FA006142A2FA7D95FEEB1E91AAEB195 /* Pod */,
 				86CFDAB57C321FC9630038CDCDA45EF4 /* Support Files */,
@@ -463,7 +463,7 @@
 				4B7CE28122BB1B2E00F5E63A /* BoxGeometry.swift in Sources */,
 				4229221D1CA95696E8FCD6AC2F728B81 /* BoxLayout.swift in Sources */,
 				4B268F9B22BBF00200D692B3 /* NSLayoutConstraint+Util.swift in Sources */,
-				4B7CE25B22BA5D1400F5E63A /* BoxBuilder.swift in Sources */,
+				4B7CE25B22BA5D1400F5E63A /* BoxMultipleBuilder.swift in Sources */,
 				4B7CE28322BB21BF00F5E63A /* NonRenderingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

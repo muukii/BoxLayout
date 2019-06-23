@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="S3y-wL-3io">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14810.12" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="S3y-wL-3io">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14766.15"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -22,20 +20,27 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="LUp-oM-ENa">
-                                <rect key="frame" x="164.5" y="303.5" width="46" height="60"/>
+                                <rect key="frame" x="162.5" y="288.5" width="50" height="90"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Zx-8X-44c">
-                                        <rect key="frame" x="0.0" y="0.0" width="46" height="30"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="30"/>
                                         <state key="normal" title="Button"/>
                                         <connections>
                                             <segue destination="P46-Bs-FH8" kind="show" id="QT0-rK-Gz0"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Au4-9V-Jxs">
-                                        <rect key="frame" x="0.0" y="30" width="46" height="30"/>
+                                        <rect key="frame" x="0.0" y="30" width="50" height="30"/>
                                         <state key="normal" title="Button"/>
                                         <connections>
                                             <segue destination="H2G-tO-hOJ" kind="show" id="Ysp-Ut-BaE"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bgz-hJ-U0z">
+                                        <rect key="frame" x="0.0" y="60" width="50" height="30"/>
+                                        <state key="normal" title="SwiftUI"/>
+                                        <connections>
+                                            <segue destination="EM8-tK-xyt" kind="show" id="oB8-0W-hmr"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -71,6 +76,24 @@
             </objects>
             <point key="canvasLocation" x="2014" y="134"/>
         </scene>
+        <!--SwiftUI View Controller-->
+        <scene sceneID="XJz-mm-l2l">
+            <objects>
+                <viewController id="EM8-tK-xyt" customClass="SwiftUIViewController" customModule="BoxLayout_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="fVF-8Z-QUu"/>
+                        <viewControllerLayoutGuide type="bottom" id="fts-Bk-95R"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="5q5-ZN-EXf">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IzY-aR-6Ic" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2702" y="13"/>
+        </scene>
         <!--Layout View Controller-->
         <scene sceneID="uMs-nP-sRx">
             <objects>
@@ -95,7 +118,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="S3y-wL-3io" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="49f-Gz-TQ8">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

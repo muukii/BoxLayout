@@ -18,7 +18,7 @@ public struct BoxPadding<Box : BoxType> : ContainerBoxType {
   public init(
     container: () -> UIView = { BoxNonRenderingView() },
     padding: UIEdgeInsets,
-    @BoxBuilder content: () -> Box
+    @BoxMultipleBuilder content: () -> Box
     ) {
     
     self.content = content()
@@ -41,10 +41,10 @@ public struct BoxPadding<Box : BoxType> : ContainerBoxType {
   
   #endif
   
-  public func apply(resolver: inout BoxResolver) -> BoxElement {
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
     
     let result = content.apply(resolver: &resolver)
-    let view = result.body
+    let view = result.elements.first!.body
     
     container.addSubview(view)
     view.translatesAutoresizingMaskIntoConstraints = false
@@ -57,7 +57,7 @@ public struct BoxPadding<Box : BoxType> : ContainerBoxType {
       view.leftAnchor.constraint(equalTo: container.leftAnchor, constant: padding.left),
       ])
     
-    return BoxElement(container)
+    return .single(BoxElement(container))
     
   }
  
@@ -74,7 +74,7 @@ public struct BoxInset<Box: BoxType> : ContainerBoxType {
   public init(
     container: () -> UIView = { BoxNonRenderingView() },
     insets: UIEdgeInsets,
-    @BoxBuilder content: () -> Box
+    @BoxMultipleBuilder content: () -> Box
     ) {
     self.content = content()
     self.container = container()
@@ -96,10 +96,10 @@ public struct BoxInset<Box: BoxType> : ContainerBoxType {
   
   #endif
   
-  public func apply(resolver: inout BoxResolver) -> BoxElement {
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
     
     let result = content.apply(resolver: &resolver)
-    let view = result.body
+    let view = result.elements.first!.body
     
     container.addSubview(view)
     view.translatesAutoresizingMaskIntoConstraints = false
@@ -142,7 +142,7 @@ public struct BoxInset<Box: BoxType> : ContainerBoxType {
     
     resolver.append(constraints: constraints)
     
-    return BoxElement(container)
+    return .single(BoxElement(container))
     
   }
   
@@ -157,7 +157,7 @@ public struct BoxCenter<Box : BoxType> : ContainerBoxType {
   
   public init(
     container: () -> UIView = { BoxNonRenderingView() },
-    @BoxBuilder content: () -> Box
+    @BoxMultipleBuilder content: () -> Box
     ) {
     self.content = content()
     self.container = container()
@@ -175,10 +175,10 @@ public struct BoxCenter<Box : BoxType> : ContainerBoxType {
   
   #endif
   
-  public func apply(resolver: inout BoxResolver) -> BoxElement {
+  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
     
     let result = content.apply(resolver: &resolver)
-    let view = result.body
+    let view = result.elements.first!.body
     
     container.addSubview(view)
     view.translatesAutoresizingMaskIntoConstraints = false
@@ -194,6 +194,6 @@ public struct BoxCenter<Box : BoxType> : ContainerBoxType {
       view.leftAnchor.constraint(greaterThanOrEqualTo: container.leftAnchor),
       ])
     
-    return BoxElement(container)
+    return .single(BoxElement(container))
   }
 }
