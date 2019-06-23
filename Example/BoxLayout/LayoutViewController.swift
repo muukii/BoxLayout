@@ -28,7 +28,10 @@ final class LayoutViewController : UIViewController {
   
   @objc private func valueChanged() {
     myView.flag = myView.toggleView.isOn
-    myView.update()
+    UIView.animate(withDuration: 0.2) {
+      self.myView.update()
+      self.myView.layoutIfNeeded()
+    }   
   }
 }
 

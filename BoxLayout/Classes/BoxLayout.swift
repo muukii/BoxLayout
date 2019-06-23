@@ -29,11 +29,12 @@ open class BoxContainerView : UIView {
   
   public func update() {
     
-    cleanup()
-    
     let content = boxLayoutThatFits()
     var resolver = BoxResolver()
     let result = content.apply(resolver: &resolver)
+        
+    cleanup()
+    
     guard case .single(let element) = result else {
       fatalError()
     }
