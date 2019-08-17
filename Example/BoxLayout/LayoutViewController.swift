@@ -47,27 +47,32 @@ final class MyView: BoxContainerView {
   private let age = UILabel.make(text: "28")
   
   override func boxLayoutThatFits() -> BoxType {
-    BoxCenter {      
-      BoxVStack {
+    
+    BoxCenter {
         BoxElement { toggleView }
-        BoxEmpty()
-          .frame(height: 20)
-        if flag {
-          BoxElement { top }
-            .aspectRatio(ratio: CGSize(width: 1, height: 1))
-        }
-        BoxElement { section }
-          .aspectRatio(ratio: CGSize(width: 1, height: 0.2))
-        BoxZStack {
-          BoxElement { bg }
-          BoxHStack {
-            BoxElement { name }
-            BoxHSpacer()
-            BoxElement { age }
-          }
-        }
-        }
-        .frame(width: 200, height: nil)
     }
+    
+//    BoxCenter {
+//      BoxVStack {
+//        BoxElement { toggleView }
+//        BoxEmpty()
+//          .frame(height: 20)
+//        if flag {
+//          BoxElement { top }
+//            .aspectRatio(ratio: CGSize(width: 1, height: 1))
+//        }
+//        BoxElement { section }
+//          .aspectRatio(ratio: CGSize(width: 1, height: 0.2))
+//        BoxZStack {
+//          BoxElement { bg }
+//          BoxHStack {
+//            BoxElement { name }
+//            BoxHSpacer()
+//            BoxElement { age }
+//          }
+//        }
+//        }
+//        .frame(width: 200, height: nil)
+//    }
   }
 }

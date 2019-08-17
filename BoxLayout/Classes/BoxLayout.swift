@@ -13,6 +13,7 @@ open class BoxContainerView : UIView {
   private(set) public var currentConstraints: [NSLayoutConstraint] = []
   
   private var resolved: BoxResolver?
+  private let rootLayoutGuide = UILayoutGuide()
   
   public init() {
     super.init(frame: .zero)
@@ -30,27 +31,39 @@ open class BoxContainerView : UIView {
   public func update() {
     
     let content = boxLayoutThatFits()
-    var resolver = BoxResolver()
-    let result = content.apply(resolver: &resolver)
-        
+    var resolver = BoxResolver(rootView: self)
+    resolver.append(layoutGuide: rootLayoutGuide)
+    resolver.append(constraints: [
+      rootLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
+      rootLayoutGuide.rightAnchor.constraint(equalTo: rightAnchor),
+      rootLayoutGuide.leftAnchor.constraint(equalTo: leftAnchor),
+      rootLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor),
+    ])
+    
+    print(resolver)
+    
+    content.apply(resolver: &resolver, parentLayoutGuide: rootLayoutGuide)
+    
+    print(resolver)
+    
+    let k = resolver
+    print(k.constraints.count)
+                
     cleanup()
-    
-    guard case .single(let element) = result else {
-      fatalError()
+                
+    resolver.children.forEach {
+      addSubview($0)
     }
-    let view = element.body
     
-    addSubview(view)
+    resolver.layoutGuides.forEach {
+      addLayoutGuide($0)
+    }
     
-    view.translatesAutoresizingMaskIntoConstraints = false
-    
-    NSLayoutConstraint.activate(resolver.constraints + [
-      view.topAnchor.constraint(equalTo: topAnchor),
-      view.rightAnchor.constraint(equalTo: rightAnchor),
-      view.bottomAnchor.constraint(equalTo: bottomAnchor),
-      view.leftAnchor.constraint(equalTo: leftAnchor),
-      ])
-    
+    resolver.constraints.forEach {
+      print($0)
+//      $0.isActive = true
+    }
+           
     resolved = resolver
     
   }
@@ -61,7 +74,7 @@ open class BoxContainerView : UIView {
     
     subviews.forEach { $0.removeFromSuperview() }    
     NSLayoutConstraint.deactivate(resolved.constraints)
-    resolved.containers.forEach { $0.removeFromSuperview() }
+    resolved.layoutGuides.forEach { $0.owningView?.removeLayoutGuide($0) }
   }
   
 }
@@ -69,28 +82,51 @@ open class BoxContainerView : UIView {
 public struct BoxResolver {
   
   public var constraints: [NSLayoutConstraint] = []
-  public var containers: [UIView] = []
+  public var layoutGuides: [UILayoutGuide] = []
+  public var children: [UIView] = []
+  
+  public let rootView: UIView
+  
+  init(rootView: UIView) {
+    self.rootView = rootView
+  }
   
   mutating func append(constraint: NSLayoutConstraint) {
     self.constraints.append(constraint)
   }
   
   mutating func append(constraints: [NSLayoutConstraint]) {
-    self.constraints.append(contentsOf: constraints)
+    constraints.forEach {
+      self.constraints.append($0)
+    }
+    print(self.constraints)
   }
   
-  mutating func append(container: UIView) {
-    self.containers.append(container)
+  mutating func append(layoutGuide: UILayoutGuide) {
+    self.layoutGuides.append(layoutGuide)
+  }
+  
+  mutating func append(child: UIView) {
+    self.children.append(child)
+  }
+  
+  mutating func makeLayoutGuide() -> UILayoutGuide {
+    let guide = UILayoutGuide()
+    append(layoutGuide: guide)
+    return guide
   }
   
 }
 
 public enum BoxApplyResult {
+  case empty
   case single(BoxElement)
   case multiple([BoxElement])
   
   var elements: [BoxElement] {
     switch self {
+    case .empty:
+      return []
     case .single(let e):
       return [e]
     case .multiple(let e):
@@ -103,7 +139,7 @@ public protocol BoxType {
   
   typealias Modified<T> = Self
   
-  func apply(resolver: inout BoxResolver) -> BoxApplyResult
+  func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult
 }
 
 public protocol BoxFrameType where Self : BoxType {
@@ -113,27 +149,29 @@ public protocol BoxFrameType where Self : BoxType {
 
 public protocol ContainerBoxType : BoxType {
   
-  var container: UIView { get }
+//  var layoutGuide: UILayoutGuide { get }
 }
 
 public struct BoxEmpty : BoxType, BoxFrameType, ContainerBoxType {
-  
-  public let container: UIView = BoxNonRenderingView()
-  
+    
   public var frame: BoxFrame = .init()
   
   public init() {
     
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
     
-    resolver.append(container: container)
-    resolver.append(constraints: makeConstraints(view: container))
+    let guide = resolver.makeLayoutGuide()
     
-    return .single(BoxElement(container))
+    let view = UIView()
+
+    resolver.append(constraints: _edges(view: view, to: guide) + makeConstraints(guide: guide))
+    resolver.append(child: view)
+    
+    return .single(BoxElement(view))
   }
-  
+    
 }
 
 public struct BoxMultiple : BoxType {
@@ -144,18 +182,19 @@ public struct BoxMultiple : BoxType {
     self.contents = contents()
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
-    .multiple(
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
+   .multiple(
       contents.flatMap { r -> [BoxElement] in
-        switch r.apply(resolver: &resolver) {
+        switch r.apply(resolver: &resolver, parentLayoutGuide: parentLayoutGuide) {
         case .single(let element):
           return [element]
         case .multiple(let elements):
           return elements
+        case .empty:
+          return []
         }
       }
     )
-    
   }
 }
 
@@ -174,12 +213,12 @@ public struct BoxCondition<TrueContent : BoxType, FalseContent : BoxType> : BoxT
     self.falseContent = falseContent
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
     if let trueContent = trueContent {
-      return trueContent.apply(resolver: &resolver)
+      return trueContent.apply(resolver: &resolver, parentLayoutGuide: parentLayoutGuide)
     }
     if let falseContent = falseContent {
-      return falseContent.apply(resolver: &resolver)
+      return falseContent.apply(resolver: &resolver, parentLayoutGuide: parentLayoutGuide)
     }
     fatalError()
   }
@@ -217,17 +256,31 @@ public struct BoxElement: BoxType, BoxFrameType {
     self.body = view()
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
     
     body.translatesAutoresizingMaskIntoConstraints = false
     
+    let guide = resolver.makeLayoutGuide()
+    
     resolver.append(
-      constraints: makeConstraints(view: body)
+      constraints: _edges(view: body, to: parentLayoutGuide)
     )
-
+    resolver.append(child: body)
+    
     return .single(self)
   }
  
+}
+
+func _edges(view: UIView, to guide: UILayoutGuide) -> [NSLayoutConstraint] {
+          
+  [
+    view.topAnchor.constraint(equalTo: guide.topAnchor),
+    view.rightAnchor.constraint(equalTo: guide.rightAnchor),
+    view.bottomAnchor.constraint(equalTo: guide.bottomAnchor),
+    view.leftAnchor.constraint(equalTo: guide.leftAnchor),
+    ]
+  
 }
 
 extension BoxFrameType {
@@ -244,7 +297,7 @@ extension BoxFrameType {
     return _self
   }
   
-  func makeConstraints(view: UIView) -> [NSLayoutConstraint] {
+  func makeConstraints(guide: UILayoutGuide) -> [NSLayoutConstraint] {
     
     var constraints: [NSLayoutConstraint] = []
     
@@ -252,29 +305,29 @@ extension BoxFrameType {
     case let .some(.size(width, height)):
       if let width = width {
         constraints.append(
-          view.widthAnchor.constraint(equalToConstant: width)
+          guide.widthAnchor.constraint(equalToConstant: width)
         )
       }
       if let height = height {
         constraints.append(
-          view.heightAnchor.constraint(equalToConstant: height)
+          guide.heightAnchor.constraint(equalToConstant: height)
         )
       }
       
     case let .some(.aspectRatio(ratio, sideLength)):
       
       constraints.append(
-        view.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: ratio.height / ratio.width)
+        guide.heightAnchor.constraint(equalTo: guide.widthAnchor, multiplier: ratio.height / ratio.width)
       )
       
       switch sideLength {
       case .some(.width(let width)):
         constraints.append(
-          view.widthAnchor.constraint(equalToConstant: width)
+          guide.widthAnchor.constraint(equalToConstant: width)
         )
       case .some(.height(let height)):
         constraints.append(
-          view.heightAnchor.constraint(equalToConstant: height)
+          guide.heightAnchor.constraint(equalToConstant: height)
         )
       case .none:
         break
@@ -286,14 +339,9 @@ extension BoxFrameType {
     
     return constraints
   }
-  
-  #if swift(>=5.1)
-  
+    
   public func padding(_ padding: UIEdgeInsets) -> BoxPadding<Self> {
     BoxPadding(padding: padding, content: { self })
   }
   
-  #else
-  
-  #endif
 }

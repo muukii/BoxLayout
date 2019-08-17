@@ -11,59 +11,31 @@ public struct BoxZStack<Content: BoxType> : ContainerBoxType, BoxFrameType {
   
   public var frame: BoxFrame = .init()
   public let content: Content
-  public let container: UIView
-  
-  #if swift(>=5.1)
-  
-  public init(container: () -> UIView = { BoxNonRenderingView() }, @BoxMultipleBuilder content: () -> Content) {
+    
+  public init(@BoxMultipleBuilder content: () -> Content) {
     self.content = content()
-    self.container = container()
   }
-  
-  #else
-  
-  public init<Box: BoxType>(container: () -> UIView = { BoxNonRenderingView() }, content: () -> Box) {
-    self.content = BoxMultiple { [content()] }
-    self.container = container()
-  }
-  
-  public init(
-    container: () -> UIView = { BoxNonRenderingView() },
-    content: () -> [BoxType]
-    ) {
-    self.content = BoxMultiple { content() }
-    self.container = container()
-  }
-  
-  public init(container: () -> UIView = { BoxNonRenderingView() }, content: () -> BoxMultiple) {
-    self.content = content()
-    self.container = container()
-  }
-  
-  #endif
-  
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+      
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
     
-    resolver.append(container: container)    
-    resolver.append(constraints: content.apply(resolver: &resolver)
-      .elements
-      .map { $0.body }
-      .flatMap { view -> [NSLayoutConstraint] in
-        
-        container.addSubview(view)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        
-        return [
-          view.topAnchor.constraint(equalTo: container.topAnchor),
-          view.rightAnchor.constraint(equalTo: container.rightAnchor),
-          view.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-          view.leftAnchor.constraint(equalTo: container.leftAnchor),
-        ]
-    })
+    resolver.append(constraints:
+      content.apply(resolver: &resolver, parentLayoutGuide: parentLayoutGuide)
+        .elements
+        .map { $0.body }
+        .flatMap { view -> [NSLayoutConstraint] in
+          
+          view.translatesAutoresizingMaskIntoConstraints = false
+          
+          return [
+            view.topAnchor.constraint(equalTo: parentLayoutGuide.topAnchor),
+            view.rightAnchor.constraint(equalTo: parentLayoutGuide.rightAnchor),
+            view.bottomAnchor.constraint(equalTo: parentLayoutGuide.bottomAnchor),
+            view.leftAnchor.constraint(equalTo: parentLayoutGuide.leftAnchor),
+          ]
+      }
+    )
     
-    resolver.append(constraints: makeConstraints(view: container))
-    
-    return .single(BoxElement(container))
+    return .empty
   }
   
 }
@@ -82,12 +54,8 @@ public struct BoxVStack<Content: BoxType> : ContainerBoxType, BoxFrameType {
   public let spacing: CGFloat
   public let alignment: HorizontalAlignment
   public let content: Content
-  public let container: UIView
-  
-  #if swift(>=5.1)
-  
+    
   public init(
-    container: () -> UIView = { BoxNonRenderingView() },
     spacing: CGFloat = 0,
     alignment: HorizontalAlignment = .center,
     @BoxMultipleBuilder content: () -> Content
@@ -95,56 +63,16 @@ public struct BoxVStack<Content: BoxType> : ContainerBoxType, BoxFrameType {
     self.alignment = alignment
     self.spacing = spacing
     self.content = content()
-    self.container = container()
   }
-  
-  #else
-  
-  public init<Box: BoxType>(
-    container: () -> UIView = { BoxNonRenderingView() },
-    spacing: CGFloat = 0,
-    alignment: HorizontalAlignment = .center,
-    content: () -> Box
-    ) {
-    self.alignment = alignment
-    self.spacing = spacing
-    self.content = BoxMultiple { [content()] }
-    self.container = container()
-  }
-  
-  public init(
-    container: () -> UIView = { BoxNonRenderingView() },
-    spacing: CGFloat = 0,
-    alignment: HorizontalAlignment = .center,
-    content: () -> [BoxType]
-    ) {
-    self.alignment = alignment
-    self.spacing = spacing
-    self.content = BoxMultiple { content() }
-    self.container = container()
-  }
-  
-  public init(
-    container: () -> UIView = { BoxNonRenderingView() },
-    spacing: CGFloat = 0,
-    alignment: HorizontalAlignment = .center,
-    content: () -> BoxMultiple
-    ) {
-    self.alignment = alignment
-    self.spacing = spacing
-    self.content = content()
-    self.container = container()
-  }
-  
-  #endif
-  
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+   
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
     
-    let results = content.apply(resolver: &resolver)
+    let results = content.apply(resolver: &resolver, parentLayoutGuide: parentLayoutGuide)
     
     let views = results.elements.map { $0.body }
+    let container = parentLayoutGuide
     
-    guard !views.isEmpty else { return .single(BoxElement(container)) }
+    guard !views.isEmpty else { return .empty }
     
     let width = container.heightAnchor.constraint(equalToConstant: 0)
     width.priority = .fittingSizeLevel
@@ -156,7 +84,6 @@ public struct BoxVStack<Content: BoxType> : ContainerBoxType, BoxFrameType {
     
     views.forEach { view in
       
-      container.addSubview(view)
       view.translatesAutoresizingMaskIntoConstraints = false
       
       resolver.append(constraints: [
@@ -207,10 +134,9 @@ public struct BoxVStack<Content: BoxType> : ContainerBoxType, BoxFrameType {
       ]
     )
     
-    resolver.append(container: container)
-    resolver.append(constraints: makeConstraints(view: container))
+//    resolver.append(constraints: makeConstraints(guide: parentLayoutGuide))
     
-    return .single(BoxElement(container))
+    return .empty
   }
   
 }
@@ -229,12 +155,8 @@ public struct BoxHStack<Content : BoxType> : ContainerBoxType, BoxFrameType {
   public let alignment: VerticalAlignment
   public let content: Content
   public let spacing: CGFloat
-  public let container: UIView
-  
-  #if swift(>=5.1)
-  
+    
   public init(
-    container: () -> UIView = { BoxNonRenderingView() },
     spacing: CGFloat = 0,
     alignment: VerticalAlignment = .center,
     @BoxMultipleBuilder content: () -> Content
@@ -242,56 +164,18 @@ public struct BoxHStack<Content : BoxType> : ContainerBoxType, BoxFrameType {
     self.spacing = spacing
     self.alignment = alignment
     self.content = content()
-    self.container = container()
   }
   
-  #else
-  
-  public init<Box: BoxType>(
-    container: () -> UIView = { BoxNonRenderingView() },
-    spacing: CGFloat = 0,
-    alignment: VerticalAlignment = .center,
-    content: () -> Box
-    ) {
-    self.spacing = spacing
-    self.alignment = alignment
-    self.content = BoxMultiple { [content()] }
-    self.container = container()
-  }
-  
-  public init(
-    container: () -> UIView = { BoxNonRenderingView() },
-    spacing: CGFloat = 0,
-    alignment: VerticalAlignment = .center,
-    content: () -> [BoxType]
-    ) {
-    self.spacing = spacing
-    self.alignment = alignment
-    self.content = BoxMultiple { content() }
-    self.container = container()
-  }
-  
-  public init(
-    container: () -> UIView = { BoxNonRenderingView() },
-    spacing: CGFloat = 0,
-    alignment: VerticalAlignment = .center,
-    content: () -> BoxMultiple
-    ) {
-    self.spacing = spacing
-    self.alignment = alignment
-    self.content = content()
-    self.container = container()
-  }
-  
-  #endif
-  
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
     
-    let results = content.apply(resolver: &resolver)
+    let guide = resolver.makeLayoutGuide()
+    
+    let results = content.apply(resolver: &resolver, parentLayoutGuide: guide)
     
     let views = results.elements.map { $0.body }
+    let container = parentLayoutGuide
     
-    guard !views.isEmpty else { return .single(BoxElement(container)) }
+    guard !views.isEmpty else { return .empty }
     
     let height = container.heightAnchor.constraint(equalToConstant: 0)
     height.priority = .fittingSizeLevel
@@ -303,7 +187,6 @@ public struct BoxHStack<Content : BoxType> : ContainerBoxType, BoxFrameType {
     
     views.forEach { view in
       
-      container.addSubview(view)
       view.translatesAutoresizingMaskIntoConstraints = false
       
       resolver.append(constraints: [
@@ -354,10 +237,9 @@ public struct BoxHStack<Content : BoxType> : ContainerBoxType, BoxFrameType {
       ]
     )
     
-    resolver.append(container: container)
-    resolver.append(constraints: makeConstraints(view: container))
+//    resolver.append(constraints: makeConstraints(guide: parentLayoutGuide))
     
-    return .single(BoxElement(container))
+    return .empty
   }
   
 }

@@ -15,6 +15,7 @@
 			dependencies = (
 			);
 			name = "Reveal-SDK";
+			productName = "Reveal-SDK";
 		};
 /* End PBXAggregateTarget section */
 
@@ -75,18 +76,18 @@
 		4AA2AF8B93DB9343FB11CF23E274C0A0 /* Reveal-SDK.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Reveal-SDK.xcconfig"; sourceTree = "<group>"; };
 		4B8ACABB7F12502258DEC6C11C9BCD0C /* NonRenderingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NonRenderingView.swift; path = BoxLayout/Classes/NonRenderingView.swift; sourceTree = "<group>"; };
 		4F249B8E2BE08E9046FADC28E44021B7 /* Pods-BoxLayout_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BoxLayout_Example-acknowledgements.plist"; sourceTree = "<group>"; };
-		4FBA4B81BB8B6F8836A2791A43B25953 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		4FBA4B81BB8B6F8836A2791A43B25953 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		51ACA7D5E2E85ABC8F9FA3829BEACD44 /* Pods-BoxLayout_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-BoxLayout_Example.modulemap"; sourceTree = "<group>"; };
 		5DB9EE5259012E9FFBC4348245DAAE86 /* Pods-BoxLayout_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-BoxLayout_Example-frameworks.sh"; sourceTree = "<group>"; };
-		65C49AA9C922B40DE63815BA551F441F /* BoxLayout.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = BoxLayout.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		65C49AA9C922B40DE63815BA551F441F /* BoxLayout.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = BoxLayout.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		6A29A15DFC6038AFC900929DA1EF637C /* BoxLayout-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BoxLayout-dummy.m"; sourceTree = "<group>"; };
 		7BE73DC793877952D13F4E8128556543 /* Pods-BoxLayout_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BoxLayout_Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		820F7DB9A307A1D9C7C3D80A4992F2FF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		820F7DB9A307A1D9C7C3D80A4992F2FF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		857126B3AC09042C5F8E6B8A0DBF8DBD /* Pods-BoxLayout_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BoxLayout_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
-		8A8D1DFB87BEFD8EF451C526BC5C094F /* Pods_BoxLayout_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_BoxLayout_Tests.framework; path = "Pods-BoxLayout_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A8D1DFB87BEFD8EF451C526BC5C094F /* Pods_BoxLayout_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BoxLayout_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D4DA36065260A5007C8C2327FCFE3EC /* BoxGeometry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BoxGeometry.swift; path = BoxLayout/Classes/BoxGeometry.swift; sourceTree = "<group>"; };
 		9A395EA4CF621ECBE76107D92AAAE0A6 /* Pods-BoxLayout_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-BoxLayout_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9E4BE5E8C305E01870B48786BB346D77 /* BoxSpacer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BoxSpacer.swift; path = BoxLayout/Classes/BoxSpacer.swift; sourceTree = "<group>"; };
 		AEF6315F04ED6D259A474ED03C0C31C7 /* BoxStack.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BoxStack.swift; path = BoxLayout/Classes/BoxStack.swift; sourceTree = "<group>"; };
 		B1B2FC4FCB1963F2F7F0767D039685CA /* Pods-BoxLayout_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-BoxLayout_Tests-Info.plist"; sourceTree = "<group>"; };
@@ -99,9 +100,9 @@
 		E419A705540C35120B252CBF192607BD /* Pods-BoxLayout_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-BoxLayout_Example-dummy.m"; sourceTree = "<group>"; };
 		E4F40ADD965188F8DD8FC3A82FABF0BF /* Pods-BoxLayout_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-BoxLayout_Example-umbrella.h"; sourceTree = "<group>"; };
 		EA9083AE78C44D5C548684A9784CA2AA /* BoxMultipleBuilder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BoxMultipleBuilder.swift; path = BoxLayout/Classes/BoxMultipleBuilder.swift; sourceTree = "<group>"; };
-		ECC5A170A8558C4B88B39A3BB191153C /* BoxLayout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = BoxLayout.framework; path = BoxLayout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECC5A170A8558C4B88B39A3BB191153C /* BoxLayout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BoxLayout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF0898DEAED5AFAFC1B4FF5345A4423A /* BoxLayout-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BoxLayout-prefix.pch"; sourceTree = "<group>"; };
-		FFC0FADF4A205EA9F6316CD257EDB646 /* Pods_BoxLayout_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_BoxLayout_Example.framework; path = "Pods-BoxLayout_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFC0FADF4A205EA9F6316CD257EDB646 /* Pods_BoxLayout_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BoxLayout_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -239,7 +240,6 @@
 				94EFDDB6388A106E8139F654290057C6 /* Frameworks */,
 				88026E23DD6F440B9315EDEBB44A8F78 /* Support Files */,
 			);
-			name = "Reveal-SDK";
 			path = "Reveal-SDK";
 			sourceTree = "<group>";
 		};
@@ -595,7 +595,6 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -709,7 +708,6 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -805,8 +803,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

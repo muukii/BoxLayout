@@ -10,26 +10,25 @@ import Foundation
 public struct BoxVSpacer : ContainerBoxType {
   
   public let minLength: CGFloat?
-  public let container: UIView = UIView()
   
   public init(minLength: CGFloat? = nil) {
     self.minLength = minLength
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
     
+    let guide = resolver.makeLayoutGuide()
+            
     if let minLength = minLength {
-      let c = container.heightAnchor.constraint(greaterThanOrEqualToConstant: minLength)
+      let c = guide.heightAnchor.constraint(greaterThanOrEqualToConstant: minLength)
       resolver.append(constraint: c)
     }
         
-    let c = container.heightAnchor.constraint(equalToConstant: 1000)
+    let c = guide.heightAnchor.constraint(equalToConstant: 1000)
     c.priority = .init(60)
     resolver.append(constraint: c)
-    
-    resolver.append(container: container)
-  
-    return .single(BoxElement(container))
+      
+    return .single(BoxElement(UIView()))
   }
   
 }
@@ -43,20 +42,20 @@ public struct BoxHSpacer : BoxType {
     self.minLength = minLength
   }
   
-  public func apply(resolver: inout BoxResolver) -> BoxApplyResult {
+  public func apply(resolver: inout BoxResolver, parentLayoutGuide: UILayoutGuide) -> BoxApplyResult {
+    
+    let guide = resolver.makeLayoutGuide()
     
     if let minLength = minLength {
-      let c = container.widthAnchor.constraint(greaterThanOrEqualToConstant: minLength)
+      let c = guide.widthAnchor.constraint(greaterThanOrEqualToConstant: minLength)
       resolver.append(constraint: c)
     }
     
-    let c = container.widthAnchor.constraint(equalToConstant: 1000)
+    let c = guide.widthAnchor.constraint(equalToConstant: 1000)
     c.priority = .init(60)
     resolver.append(constraint: c)
     
-    resolver.append(container: container)
-    
-    return .single(BoxElement(container))
+    return .single(BoxElement(UIView()))
   }
   
 
