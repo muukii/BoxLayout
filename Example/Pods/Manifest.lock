@@ -1,6 +1,6 @@
 PODS:
   - BoxLayout (0.1.0)
-  - Reveal-SDK (23)
+  - Reveal-SDK (24)
 
 DEPENDENCIES:
   - BoxLayout (from `../`)
@@ -16,8 +16,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BoxLayout: af9bd0282d5e2b2a2de44f1d8014cf77cc152ed5
-  Reveal-SDK: bb223749b198a2b9bad6043ec6ad748f99e7abe5
+  Reveal-SDK: 5d7e56b8f018c0a88b3a2c10bf68d598bbd3b071
 
 PODFILE CHECKSUM: da478d5fdbea100a124a7cc2391082210c8bfd4b
 
-COCOAPODS: 1.7.1
+COCOAPODS: 1.7.2
